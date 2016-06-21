@@ -10,14 +10,16 @@ namespace Charm.Core
         /// <remarks>
         /// http://stackoverflow.com/questions/730268/unique-random-string-generation
         /// </remarks>
-        string GenerateRandomString(int length, string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+        string GenerateRandomString(int length,
+            string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
         {
-            if (length < 0) throw new ArgumentOutOfRangeException("length", "length cannot be less than zero.");
+            if (length < 0) throw new ArgumentOutOfRangeException(nameof(length), "length cannot be less than zero.");
             if (string.IsNullOrEmpty(allowedChars)) throw new ArgumentException("allowedChars may not be empty.");
 
             const int byteSize = 0x100;
             var allowedCharSet = new HashSet<char>(allowedChars).ToArray();
-            if (byteSize < allowedCharSet.Length) throw new ArgumentException(String.Format("allowedChars may contain no more than {0} characters.", byteSize));
+            if (byteSize < allowedCharSet.Length)
+                throw new ArgumentException($"allowedChars may contain no more than {byteSize} characters.");
 
             // Guid.NewGuid and System.Random are not particularly random. By using a
             // cryptographically-secure random number generator, the caller is always
@@ -35,9 +37,9 @@ namespace Charm.Core
                         // random value falls into the last group and the last group is
                         // too small to choose from the entire allowedCharSet, ignore
                         // the value in order to avoid biasing the result.
-                        var outOfRangeStart = byteSize - (byteSize % allowedCharSet.Length);
+                        var outOfRangeStart = byteSize - (byteSize%allowedCharSet.Length);
                         if (outOfRangeStart <= buf[i]) continue;
-                        result.Append(allowedCharSet[buf[i] % allowedCharSet.Length]);
+                        result.Append(allowedCharSet[buf[i]%allowedCharSet.Length]);
                     }
                 }
                 return result.ToString();
